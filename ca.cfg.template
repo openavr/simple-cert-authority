@@ -1,0 +1,9 @@
+#
+# Common configuration for setting a CA and Sub-CA Yubikey.
+#
+FULL_CORP="<MyCorpName>"
+ROOT_DOMAIN="<com|net|org|etc>"
+
+SUB_CA_USERS=(
+    # "<user>-<yubikey-serial>"
+)
