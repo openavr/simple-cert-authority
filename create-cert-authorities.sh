@@ -172,21 +172,34 @@ function create_sub_ca () {
 
     source ${YK_OUTFILE}
 
-    cat <<-EOF
+    YK_SETUP="${OUTDIR}/yubikey-${user}-setup.sh"
+    YKMAN="ykman --device ${user##*-}"
 
-	Run the following commands to configure the Yubikey PIV access codes:
+    cat >${YK_SETUP} <<-EOF
+	#!/bin/bash -x
+	#
+	# Configure Yubikey PIV with SuB CA key/cert: ${user}
+	#
 
-	$ ykman piv change-management-key -n ${key}
-	$ ykman piv change-pin -P 123456 -n ${pin}
-	$ ykman piv change-puk -p 12345678 -n ${puk}
+	# Reset the PIV application
+	if [ "\$1" == "reset" ]; then
+	    ${YKMAN} piv reset || exit 1
+	fi
 
-	Run the following commands to import the Sub-CA private key and certificate
-	into the Yubikey:
+	# Set acccess codes.
+	${YKMAN} piv access change-management-key -n ${key} || exit 1
+	${YKMAN} piv access change-pin -P 123456 -n ${pin} || exit 1
+	${YKMAN} piv access change-puk -p 12345678 -n ${puk} || exit 1
 
-	$ ykman piv import-key 9c ${SUB_CA_KEY} -m ${key}
-	$ ykman piv import-certificate 9c ${SUB_CA_CRT} -m ${key}
-	$ ykman piv import-certificate 82 ${CA_CRT} -m ${key}
+	# Load Sub CA private key and certificates
+	${YKMAN} piv keys import 9c ${SUB_CA_KEY} -m ${key}
+	${YKMAN} piv certificates import 9c ${SUB_CA_CRT} -m ${key}
+	${YKMAN} piv certificates import 82 ${CA_CRT} -m ${key}
+
+	${YKMAN} piv info
 	EOF
+    chmod 755 ${YK_SETUP}
+    echo "Yubiky setup script: ${YK_SETUP}"
 }
 
 #
