@@ -4,6 +4,11 @@
 FULL_CORP="<MyCorpName>"
 ROOT_DOMAIN="<com|net|org|etc>"
 
+COUNTRY="<countryName>"
+STATE="<stateOrProvinceName>"
+CITY="<localityName>"
+ORG_UNIT="<organizationalUnitName>"
+
 SUB_CA_USERS=(
     # "<user>-<yubikey-serial>"
 )

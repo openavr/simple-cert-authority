@@ -48,7 +48,12 @@ function create_CA_keys () {
 	prompt = no
 
 	[ req_distinguished_name ]
-	CN=${FULL_CORP} CA
+	commonName              = ${FULL_CORP} Root CA
+	countryName             = ${COUNTRY}
+	stateOrProvinceName     = ${STATE}
+	localityName            = ${CITY}
+	organizationName        = ${FULL_CORP}
+	organizationalUnitName  = ${ORG_UNIT}
 
 	[ v3_ca ]
 	subjectKeyIdentifier=hash
@@ -57,7 +62,6 @@ function create_CA_keys () {
 	nameConstraints=critical,@nc
 
 	[ nc ]
-	permitted;otherName=1.3.6.1.5.5.7.8.7;IA5:${DOMAIN}
 	permitted;email.0=${DOMAIN}
 	permitted;email.1=.${DOMAIN}
 	permitted;DNS=${DOMAIN}
