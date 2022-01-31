@@ -69,13 +69,15 @@ EOF
 
 set -x
 
-openssl genrsa -out firmware-signing.key 2048 || exit 1
+openssl ecparam -name secp384r1 -genkey -noout -out firmware-signing.key \
+    || return 1
 
 openssl req -sha256 -new \
     -config firmware-signing-csr.conf \
     -key firmware-signing.key \
     -nodes \
-    -out firmware-signing.csr || exit 1
+    -out firmware-signing.csr \
+    || exit 1
 
 cat >openssl-yubikey.conf <<EOF
 openssl_conf     = openssl_def
@@ -100,6 +102,7 @@ OPENSSL_CONF=openssl-yubikey.conf openssl x509 \
     -req \
     -in firmware-signing.csr \
     -extfile firmware-signing-crt.conf \
-    -out firmware-signing.crt
+    -out firmware-signing.crt \
+    || exit 1
 
 openssl verify -show_chain -CAfile ca-bundle.crt firmware-signing.crt

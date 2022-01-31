@@ -71,14 +71,18 @@ function create_CA_keys () {
     # Generate the CA private key and certificate.
     #
 
-    openssl genrsa -out ${CA_KEY} 2048 || exit 1
+    openssl ecparam -name secp384r1 -genkey -noout -out ${CA_KEY} \
+        || exit 1
 
     # NOTE: You might need to 'apt install datefudge'.
     datefudge "2020-01-01 UTC" openssl req -new -sha256 -x509 \
         -set_serial 1 -days 1000000 -config ${OPENSSL_CONF} \
-        -key ${CA_KEY} -out ${CA_CRT} || exit 1
+        -key ${CA_KEY} -out ${CA_CRT} \
+        || exit 1
 
     echo 01 > ${CA_SERIAL}
+
+    openssl x509 -noout -text -in ${CA_CRT}
 }
 
 
@@ -121,11 +125,13 @@ function create_sub_ca () {
 		EOF
 
         # Generate the private key.
-        openssl genrsa -out ${SUB_CA_KEY} 2048 || return 1
+        openssl ecparam -name secp384r1 -genkey -noout -out ${SUB_CA_KEY} \
+            || return 1
 
         # Generate the Sub-CA certificate signing request.
         openssl req -sha256 -new -config ${SUB_CA_CSR_CFG} \
-            -key ${SUB_CA_KEY} -nodes -out ${SUB_CA_CSR} || return 1
+            -key ${SUB_CA_KEY} -nodes -out ${SUB_CA_CSR} \
+            || return 1
 
         # Generate the Sub-CA certificate.
         openssl x509 -sha256 -CA ${CA_CRT} -CAkey ${CA_KEY} -days 5500 -req \
@@ -133,6 +139,8 @@ function create_sub_ca () {
             || return 1
 
         echo 00 > ${SUB_CA_SERIAL}
+
+        openssl x509 -noout -text -in ${SUB_CA_CRT}
     fi
 
     #
