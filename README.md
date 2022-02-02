@@ -188,3 +188,59 @@ functionality without exposing them directly.
 * Sub CA certs are also called intermediary certificates.
 * A Sub CA can handle CSR (Certificate Signing Requests) on behalf of the
   Certificate Authority.
+
+## Setup Virtual Machine for running Root CA
+
+Install the latest Debian in a Virtual Machine:
+
+* No GUI or desktop environment.
+* Encrypted Root FS
+
+After initial installation complete:
+
+* Install the following packages with `apt install`:
+
+  + yubikey-manager
+  + opensc-pkcs11
+  + libyubikey-udev
+  + ykcs11
+  + datefudge
+  + git
+
+* Clone this git repository:
+
+    $ mkdir ~/root-ca
+    $ cd ~/root-ca
+    $ git clone https://github.com/openavr/simple-cert-authoriry.git
+
+* Disconnect the Root CA Virtual Machine from all networks. Network
+  access is no longer needed.
+
+* Configure the CA:
+
+    $ cd ~/root-ca/simple-cert-authority
+    $ cp ca.cfg.template ca.cfg
+    $ ${EDITOR} ca.cfg
+
+* Generate the Root CA and Sub CA data:
+
+    $ ./create-cert-authority
+
+* Run the yubikey setup scripts mentioned in the output from running the
+  `create-cert-authority` script. This will program the certs and private key for
+  a Sub CA into the Yubikey. Each Yubikey should be programmed with a key/cert
+  pair.
+
+* Once you have programmed the Yubikey devices, you will need to store the PIV
+  PIN/PUK access codes so that you can use the Yubikey Sub CA devices for signing
+  operations.
+
+* Now that you have the programmed the Yubikey Sub CA devices and stored the
+  PIN/PUK codes away, you are effectively done with the Root CA virtual machine.
+  You can shut it down and store away the VM image for later use (e.g. Sub CA
+  cert maintenance, creating new Sub CA certs, cert revocation, etc).
+
+* Note that the Root CA private key has never left the virtual machine. You can
+  make a copy of the root ca virtual machine image as a backup and secure it.
+
+* Don't forget the passphrase for unlocking the virtual machine root fs!
