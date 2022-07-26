@@ -95,7 +95,7 @@ Now we get to the end game of all of this...
 I develop firmware images for various Single Board Computers (SBC) using Yocto.
 I want to be able to trust those images before they are loaded on the devices
 (e.g. OTA updates), so I need to be able to sign the images at build time and
-and then verify the signature on the device.
+then verify the signature on the device.
 
 It's not feasible to use the Yubikey Sub CA to sign the images at build time
 (due to wanting to have an automated process), so I want to use the Yubikey to
@@ -209,22 +209,22 @@ After initial installation complete:
 
 * Clone this git repository:
 
-    $ mkdir ~/root-ca
-    $ cd ~/root-ca
-    $ git clone https://github.com/openavr/simple-cert-authoriry.git
+      $ mkdir ~/root-ca
+      $ cd ~/root-ca
+      $ git clone https://github.com/openavr/simple-cert-authoriry.git
 
 * Disconnect the Root CA Virtual Machine from all networks. Network
   access is no longer needed.
 
 * Configure the CA:
 
-    $ cd ~/root-ca/simple-cert-authority
-    $ cp ca.cfg.template ca.cfg
-    $ ${EDITOR} ca.cfg
+      $ cd ~/root-ca/simple-cert-authority
+      $ cp ca.cfg.template ca.cfg
+      $ ${EDITOR} ca.cfg
 
 * Generate the Root CA and Sub CA data:
 
-    $ ./create-cert-authority
+      $ ./create-cert-authority
 
 * Run the yubikey setup scripts mentioned in the output from running the
   `create-cert-authority` script. This will program the certs and private key for
